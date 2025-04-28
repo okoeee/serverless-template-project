@@ -1,0 +1,14 @@
+
+# Node
+node_modules
+
+# Serverless
+.serverless/
+
+# Go build output
+.bin
+
+# IDE files
+.vscode/
+.idea/
+
