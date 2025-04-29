@@ -5,6 +5,9 @@ node_modules
 # Serverless
 .serverless/
 
+# AWS SAM
+.aws-sam/
+
 # Go build output
 .bin
 
