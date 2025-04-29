@@ -9,14 +9,27 @@ Globals:
     Architectures:
       - arm64
 
+Parameters:
+  Environment:
+    Type: String
+    Description: "The environment for the Lambda function"
+    AllowedValues:
+      - dev
+      - stg
+      - prod
+
 Resources:
   HelloFunction:
     Type: AWS::Serverless::Function
     Metadata: 
       BuildMethod: go1.x 
     Properties:
+      FunctionName: !Sub "${Environment}-hello-function"
       CodeUri: ./
       Handler: cmd/lambda/main.go
+      Environment:
+        Variables:
+          APP_ENV: !Ref Environment
       Events:
         HelloApiEvent:
           Type: HttpApi
