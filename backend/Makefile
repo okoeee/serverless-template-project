@@ -9,7 +9,7 @@ ENV_STG = stg
 ENV_PROD = prod
 
 build:
-	sam build
+	sam build --use-container
 
 clean:
 	rm -rf .aws-sam
