@@ -1,5 +1,7 @@
 {
-  "Parameters": {
-    "APP_ENV": "dev"
+  "HelloFunction": {
+    "APP_ENV": "dev",
+    "ENDPOINT_URL_DYNAMODB": "http://dynamodb-sam-template-project:8000",
+    "USERS_TABLE_NAME": "dev-users"
   }
 }
