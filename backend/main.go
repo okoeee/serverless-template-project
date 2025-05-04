@@ -10,8 +10,8 @@ import (
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
 
-	"serverless-go-react-native/backend/internal/db"
-	"serverless-go-react-native/backend/internal/db/repository"
+	"backend/internal/db"
+	"backend/internal/db/repository"
 )
 
 type Request struct {
