@@ -7,9 +7,10 @@ import (
 	"context"
 	"log"
 	"os"
-	"serverless-go-react-native/backend/internal/db"
-	"serverless-go-react-native/backend/internal/models"
 	"testing"
+
+	"backend/internal/db"
+	"backend/internal/models"
 )
 
 func initAndGetSUT(ctx context.Context) *UserRepository {

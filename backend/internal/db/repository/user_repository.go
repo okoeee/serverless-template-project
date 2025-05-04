@@ -9,8 +9,8 @@ import (
 	"time"
 
 	"os"
-	"serverless-go-react-native/backend/internal/db/dao"
-	"serverless-go-react-native/backend/internal/models"
+	"backend/internal/db/dao"
+	"backend/internal/models"
 )
 
 type UserRepository struct {
