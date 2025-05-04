@@ -1,16 +1,21 @@
-package main 
+package main
 
 import (
+	"context"
 	"encoding/json"
 	"fmt"
+	"log"
 	"os"
 
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
+
+	"serverless-go-react-native/backend/internal/db"
+	"serverless-go-react-native/backend/internal/db/repository"
 )
 
 type Request struct {
-	Name string `json:"name"`
+	Name    string `json:"name"`
 	Message string `json:"message"`
 }
 
@@ -19,6 +24,9 @@ type Response struct {
 }
 
 func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProxyResponse, error) {
+
+	ctx := context.Background()
+
 	fmt.Println("Hello from AWS Lambda!")
 	fmt.Println("Request:", request)
 
@@ -38,14 +46,31 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 
 		return events.APIGatewayProxyResponse{
 			StatusCode: 400,
-			Body: string(jsonErrorResponse),
-			Headers: map[string]string{"Content-Type": "application/json"},
+			Body:       string(jsonErrorResponse),
+			Headers:    map[string]string{"Content-Type": "application/json"},
 		}, nil
 	}
 
 	responseData := Response{
 		Message: message,
 	}
+
+	// DB Client
+	dbClient, err := db.GetDynamoDBClient(ctx)
+	if err != nil {
+		log.Fatal("Error creating DynamoDB client:", err)
+	}
+
+	userRepository := repository.NewUserRepository(dbClient)
+
+	// Get User
+	userId := "u-001"
+	user, err := userRepository.GetUserById(ctx, userId)
+	if err != nil {
+		log.Fatal("Error getting user:", err)
+	}
+
+	log.Println("User is:", user)
 
 	jsonResponse, err := json.Marshal(responseData)
 	if err != nil {
@@ -57,14 +82,14 @@ func HandleRequest(request events.APIGatewayProxyRequest) (events.APIGatewayProx
 		return events.APIGatewayProxyResponse{
 			StatusCode: 500,
 			Body:       string(jsonErrorResponse),
-			Headers: map[string]string{"Content-Type": "application/json"},
+			Headers:    map[string]string{"Content-Type": "application/json"},
 		}, nil
 	}
 
 	return events.APIGatewayProxyResponse{
 		StatusCode: 200,
-		Body: string(jsonResponse), 	
-		Headers: map[string]string{"Content-Type": "application/json"},
+		Body:       string(jsonResponse),
+		Headers:    map[string]string{"Content-Type": "application/json"},
 	}, nil
 }
 

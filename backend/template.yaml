@@ -19,7 +19,22 @@ Parameters:
       - stg
       - prod
 
+Conditions:
+  IsDev: !Equals [!Reff Environment, dev]
+
 Resources:
+  UsersTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${Environment}-users"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: userId
+          KeyType: HASH
+
   HelloFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -30,12 +45,18 @@ Resources:
       Environment:
         Variables:
           APP_ENV: !Ref Environment
+          USERS_TABLE_NAME: !Sub "${Environment}-users"
+          ENDPOINT_URL_DYNAMODB: !If
+            - IsDev
       Events:
         HelloApiEvent:
           Type: HttpApi
           Properties:
             Path: /hello
             Method: post
+      Policies:
+        - DynamoDBCrudPolicy:
+            TableName: !Sub "${Environment}-users"
 
 Outputs:
   HelloApiEndpoint:
