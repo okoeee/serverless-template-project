@@ -43,6 +43,22 @@ serverless-go-react-native
 - Node.js (version 14 or later)
 - AWS CLI configured with your credentials
 
+### Local DynamoDB
+Execute the following command only at the first time.
+```sh
+docker network create sam-template-project
+```
+
+Start DynamoDB Local
+```sh
+make local-dynamodb
+```
+
+Create a table
+```sh
+make init-local-dynamodb
+```
+
 ### Backend Setup
 
 1. Navigate to the `backend` directory:
@@ -55,14 +71,9 @@ cd backend
 go mod tidy
 ```
 
-3. Install Serverless framework globally:
+3. Start the local server
 ```
-npm install -g serverless
-```
-
-3. Deploy the backend using AWS SAM:
-```
-sls deploy
+make local-api
 ```
 
 ### Frontend Setup
@@ -86,3 +97,47 @@ npm start
 
 - The backend provides an API for managing tasks. You can create, read, update, and delete tasks through the defined endpoints.
 - The frontend application allows users to interact with the task management system, displaying tasks and enabling task operations.
+
+
+## Other Commands
+
+### Dummy AWS Credentials
+```sh
+export AWS_ACCESS_KEY_ID=dummy
+export AWS_SECRET_ACCESS_KEY=dummy
+export AWS_DEFAULT_REGION=ap-northeast-1
+```
+
+### Sample User Data
+Adding data.
+```sh
+aws dynamodb put-item \
+  --table-name dev-users \
+  --item '{
+    "userId": {"S": "u-001"},
+    "name": {"S": "Kazuma"},
+    "email": {"S": "kazuma@example.com"}
+  }' \
+  --endpoint-url http://localhost:8000 \
+  --region ap-northeast-1
+```
+
+fetching data.
+```sh
+aws dynamodb get-item \
+  --table-name dev-users \
+  --key '{
+    "userId": {"S": "u-001"}
+  }' \
+  --endpoint-url http://localhost:8000 \
+  --region ap-northeast-1
+```
+
+
+### Sample Request
+For local.
+```sh
+curl -X POST localhost:3000/hello \
+     -H "Content-Type: application/json" \
+     -d '{"name": "test","message": "hello"}'
+```
