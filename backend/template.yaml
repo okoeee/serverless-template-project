@@ -19,6 +19,9 @@ Parameters:
       - stg
       - prod
 
+Conditions:
+  IsDev: !Equals [!Reff Environment, dev]
+
 Resources:
   UsersTable:
     Type: AWS::DynamoDB::Table
@@ -43,6 +46,8 @@ Resources:
         Variables:
           APP_ENV: !Ref Environment
           USERS_TABLE_NAME: !Sub "${Environment}-users"
+          ENDPOINT_URL_DYNAMODB: !If
+            - IsDev
       Events:
         HelloApiEvent:
           Type: HttpApi
