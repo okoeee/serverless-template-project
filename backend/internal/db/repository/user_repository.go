@@ -6,9 +6,11 @@ import (
 	"github.com/aws/aws-sdk-go-v2/feature/dynamodb/attributevalue"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb"
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
+	"time"
 
 	"os"
 	"serverless-go-react-native/backend/internal/db/dao"
+	"serverless-go-react-native/backend/internal/models"
 )
 
 type UserRepository struct {
@@ -28,8 +30,17 @@ func NewUserRepository(client *dynamodb.Client) *UserRepository {
 	}
 }
 
-func (r *UserRepository) CreateUser(ctx context.Context, user *dao.UserDao) error {
-	item, err := attributevalue.MarshalMap(user)
+func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) error {
+
+	userDao := &dao.UserDao{
+		UserId:    user.UserId,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	item, err := attributevalue.MarshalMap(userDao)
 	if err != nil {
 		return err
 	}
@@ -41,7 +52,7 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *dao.UserDao) erro
 	return err
 }
 
-func (r *UserRepository) GetUserById(ctx context.Context, userId string) (*dao.UserDao, error) {
+func (r *UserRepository) GetUserById(ctx context.Context, userId string) (*models.User, error) {
 	result, err := r.Client.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: &r.TableName,
 		Key: map[string]types.AttributeValue{
@@ -61,11 +72,26 @@ func (r *UserRepository) GetUserById(ctx context.Context, userId string) (*dao.U
 		return nil, err
 	}
 
-	return &userDao, nil
+	user := &models.User{
+		UserId: userDao.UserId,
+		Name:   userDao.Name,
+		Email:  userDao.Email,
+	}
+
+	return user, nil
 }
 
-func (r *UserRepository) UpdateUser(ctx context.Context, user *dao.UserDao) error {
-	item, err := attributevalue.MarshalMap(user)
+func (r *UserRepository) UpdateUser(ctx context.Context, user *models.User) error {
+
+	userDao := &dao.UserDao{
+		UserId:    user.UserId,
+		Name:      user.Name,
+		Email:     user.Email,
+		CreatedAt: time.Now(),
+		UpdatedAt: time.Now(),
+	}
+
+	item, err := attributevalue.MarshalMap(userDao)
 	if err != nil {
 		return err
 	}

@@ -7,11 +7,9 @@ import (
 	"context"
 	"log"
 	"os"
-	"testing"
-	"time"
-
 	"serverless-go-react-native/backend/internal/db"
-	"serverless-go-react-native/backend/internal/db/dao"
+	"serverless-go-react-native/backend/internal/models"
+	"testing"
 )
 
 func initAndGetSUT(ctx context.Context) *UserRepository {
@@ -34,17 +32,15 @@ func initAndGetSUT(ctx context.Context) *UserRepository {
 func TestUserRepository_CreateUser(t *testing.T) {
 	ctx := context.Background()
 
-	userDao := &dao.UserDao{
-		UserId:    "u-001",
-		Name:      "testuser",
-		Email:     "test@gmail.com",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	user := &models.User{
+		UserId: "u-001",
+		Name:   "testuser",
+		Email:  "test@gmail.com",
 	}
 
 	userRepository := initAndGetSUT(ctx)
 
-	err := userRepository.CreateUser(ctx, userDao)
+	err := userRepository.CreateUser(ctx, user)
 
 	if err != nil {
 		log.Fatal("Error creating user:", err)
@@ -72,17 +68,15 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 
 	ctx := context.Background()
 
-	userDao := &dao.UserDao{
-		UserId:    "u-001",
-		Name:      "Test",
-		Email:     "test@gmail.com",
-		CreatedAt: time.Now(),
-		UpdatedAt: time.Now(),
+	user := &models.User{
+		UserId: "u-001",
+		Name:   "UpdatedTest",
+		Email:  "test@gmail.com",
 	}
 
 	userRepository := initAndGetSUT(ctx)
 
-	err := userRepository.UpdateUser(ctx, userDao)
+	err := userRepository.UpdateUser(ctx, user)
 
 	if err != nil {
 		log.Fatal("Error creating user:", err)
