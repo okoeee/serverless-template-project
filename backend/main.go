@@ -6,10 +6,6 @@ import (
 	"backend/internal/handlers"
 )
 
-type Response struct {
-	Message string `json:"message"`
-}
-
 func main() {
 	lambda.Start(handlers.SampleRequestHandler)
 }
