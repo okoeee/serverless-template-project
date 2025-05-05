@@ -79,11 +79,11 @@ Resources:
           TASKS_TABLE_NAME: !Sub "${Environment}-tasks"
           ENDPOINT_URL_DYNAMODB: !If [IsDev, "", ""]
       Events:
-        HelloApiEvent:
+        Api:
           Type: HttpApi
           Properties:
-            Path: /hello
-            Method: post
+            Path: /{proxy+}
+            Method: ANY
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Sub "${Environment}-users"
