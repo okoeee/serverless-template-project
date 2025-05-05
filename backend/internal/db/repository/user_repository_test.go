@@ -58,12 +58,7 @@ func TestUserRepository_GetUserById(t *testing.T) {
 		log.Fatal("Error getting user:", err)
 	}
 
-	userDao, err := userRepository.GetUserByEmail(ctx, user.Email)
-	if err != nil {
-		log.Fatal("Error getting user:", err)
-	}
-
-	log.Println("User is:", userDao)
+	log.Println("User is:", user)
 
 }
 
