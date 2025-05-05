@@ -40,13 +40,7 @@ local-dynamodb:
 		amazon/dynamodb-local:latest
 
 init-local-dynamodb:
-	aws dynamodb create-table \
-		--region ap-northeast-1 \
-		--table-name dev-users \
-		--attribute-definitions AttributeName=userId,AttributeType=S \
-		--key-schema AttributeName=userId,KeyType=HASH \
-		--billing-mode PAY_PER_REQUEST \
-		--endpoint-url http://localhost:8000
+	./scripts/init-local-dynamodb.sh
 
 delete-local-dynamodb:
 	aws dynamodb delete-table \
