@@ -8,9 +8,9 @@ import (
 	"github.com/aws/aws-sdk-go-v2/service/dynamodb/types"
 	"time"
 
-	"os"
 	"backend/internal/db/dao"
 	"backend/internal/models"
+	"os"
 )
 
 type UserRepository struct {
@@ -33,7 +33,7 @@ func NewUserRepository(client *dynamodb.Client) *UserRepository {
 func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) error {
 
 	userDao := &dao.UserDao{
-		UserId:    user.UserId,
+		UserId:    user.UserId.String(),
 		Name:      user.Name,
 		Email:     user.Email,
 		CreatedAt: time.Now(),
@@ -52,11 +52,11 @@ func (r *UserRepository) CreateUser(ctx context.Context, user *models.User) erro
 	return err
 }
 
-func (r *UserRepository) GetUserById(ctx context.Context, userId string) (*models.User, error) {
+func (r *UserRepository) GetUserById(ctx context.Context, userId models.UserId) (*models.User, error) {
 	result, err := r.Client.GetItem(ctx, &dynamodb.GetItemInput{
 		TableName: &r.TableName,
 		Key: map[string]types.AttributeValue{
-			"userId": &types.AttributeValueMemberS{Value: userId},
+			"userId": &types.AttributeValueMemberS{Value: userId.String()},
 		},
 	})
 	if err != nil {
@@ -72,8 +72,49 @@ func (r *UserRepository) GetUserById(ctx context.Context, userId string) (*model
 		return nil, err
 	}
 
+	userId, err = models.ParseUserId(userDao.UserId)
+	if err != nil {
+		return nil, err
+	}
+
 	user := &models.User{
-		UserId: userDao.UserId,
+		UserId: userId,
+		Name:   userDao.Name,
+		Email:  userDao.Email,
+	}
+
+	return user, nil
+}
+
+func (r *UserRepository) GetUserByEmail(ctx context.Context, email string) (*models.User, error) {
+	result, err := r.Client.Query(ctx, &dynamodb.QueryInput{
+		TableName:              &r.TableName,
+		IndexName:              aws.String("EmailIndex"),
+		KeyConditionExpression: aws.String("email = :email"),
+		ExpressionAttributeValues: map[string]types.AttributeValue{
+			":email": &types.AttributeValueMemberS{Value: email},
+		},
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	if len(result.Items) == 0 {
+		return nil, nil
+	}
+
+	var userDao dao.UserDao
+	if err := attributevalue.UnmarshalMap(result.Items[0], &userDao); err != nil {
+		return nil, err
+	}
+
+	userId, err := models.ParseUserId(userDao.UserId)
+	if err != nil {
+		return nil, err
+	}
+
+	user := &models.User{
+		UserId: userId,
 		Name:   userDao.Name,
 		Email:  userDao.Email,
 	}
@@ -84,7 +125,7 @@ func (r *UserRepository) GetUserById(ctx context.Context, userId string) (*model
 func (r *UserRepository) UpdateUser(ctx context.Context, user *models.User) error {
 
 	userDao := &dao.UserDao{
-		UserId:    user.UserId,
+		UserId:    user.UserId.String(),
 		Name:      user.Name,
 		Email:     user.Email,
 		CreatedAt: time.Now(),
@@ -104,12 +145,12 @@ func (r *UserRepository) UpdateUser(ctx context.Context, user *models.User) erro
 	return err
 }
 
-func (r *UserRepository) DeleteUser(ctx context.Context, userId string) error {
+func (r *UserRepository) DeleteUser(ctx context.Context, userId models.UserId) error {
 
 	_, err := r.Client.DeleteItem(ctx, &dynamodb.DeleteItemInput{
 		TableName: &r.TableName,
 		Key: map[string]types.AttributeValue{
-			"userId": &types.AttributeValueMemberS{Value: userId},
+			"userId": &types.AttributeValueMemberS{Value: userId.String()},
 		},
 	})
 	return err

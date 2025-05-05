@@ -33,11 +33,10 @@ func initAndGetSUT(ctx context.Context) *UserRepository {
 func TestUserRepository_CreateUser(t *testing.T) {
 	ctx := context.Background()
 
-	user := &models.User{
-		UserId: "u-001",
-		Name:   "testuser",
-		Email:  "test@gmail.com",
-	}
+	user := models.NewUser(
+		"Test",
+		"test@gmail.com",
+	)
 
 	userRepository := initAndGetSUT(ctx)
 
@@ -52,11 +51,14 @@ func TestUserRepository_GetUserById(t *testing.T) {
 
 	ctx := context.Background()
 
-	userId := "u-001"
-
 	userRepository := initAndGetSUT(ctx)
 
-	userDao, err := userRepository.GetUserById(ctx, userId)
+	user, err := userRepository.GetUserByEmail(ctx, "test@gmail.com")
+	if err != nil {
+		log.Fatal("Error getting user:", err)
+	}
+
+	userDao, err := userRepository.GetUserByEmail(ctx, user.Email)
 	if err != nil {
 		log.Fatal("Error getting user:", err)
 	}
@@ -69,15 +71,16 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 
 	ctx := context.Background()
 
-	user := &models.User{
-		UserId: "u-001",
-		Name:   "UpdatedTest",
-		Email:  "test@gmail.com",
-	}
-
 	userRepository := initAndGetSUT(ctx)
 
-	err := userRepository.UpdateUser(ctx, user)
+	user, err := userRepository.GetUserByEmail(ctx, "test@gmail.com")
+	if err != nil {
+		log.Fatal("Error getting user:", err)
+	}
+
+	user.Name = "Updated"
+
+	err = userRepository.UpdateUser(ctx, user)
 
 	if err != nil {
 		log.Fatal("Error creating user:", err)
@@ -88,11 +91,14 @@ func TestUserRepository_UpdateUser(t *testing.T) {
 func TestUserRepository_DeleteUser(t *testing.T) {
 	ctx := context.Background()
 
-	userId := "u-001"
-
 	userRepository := initAndGetSUT(ctx)
 
-	err := userRepository.DeleteUser(ctx, userId)
+	user, err := userRepository.GetUserByEmail(ctx, "test@gmail.com")
+	if err != nil {
+		log.Fatal("Error getting user:", err)
+	}
+
+	err = userRepository.DeleteUser(ctx, user.UserId)
 	if err != nil {
 		log.Fatal("Error deleting user:", err)
 	}
