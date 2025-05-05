@@ -65,7 +65,7 @@ Resources:
           Projection:
             ProjectionType: ALL
 
-  HelloFunction:
+  MainFunction:
     Type: AWS::Serverless::Function
     Metadata:
       BuildMethod: go1.x
