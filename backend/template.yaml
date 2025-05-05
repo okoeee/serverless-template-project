@@ -44,6 +44,27 @@ Resources:
           Projection:
             ProjectionType: ALL
 
+  TasksTable:
+    Type: AWS::DynamoDB::Table
+    Properties:
+      TableName: !Sub "${Environment}-tasks"
+      BillingMode: PAY_PER_REQUEST
+      AttributeDefinitions:
+        - AttributeName: taskId
+          AttributeType: S
+        - AttributeName: userId
+          AttributeType: S
+      KeySchema:
+        - AttributeName: taskId
+          KeyType: HASH
+      GlobalSecondaryIndexes:
+        - IndexName: UserTasksIndex
+          KeySchema:
+            - AttributeName: userId
+              KeyType: HASH
+          Projection:
+            ProjectionType: ALL
+
   HelloFunction:
     Type: AWS::Serverless::Function
     Metadata:
@@ -55,6 +76,7 @@ Resources:
         Variables:
           APP_ENV: !Ref Environment
           USERS_TABLE_NAME: !Sub "${Environment}-users"
+          TASKS_TABLE_NAME: !Sub "${Environment}-tasks"
           ENDPOINT_URL_DYNAMODB: !If
             - IsDev
       Events:
@@ -66,6 +88,8 @@ Resources:
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Sub "${Environment}-users"
+        - DynamoDBCrudPolicy:
+            TableName: !Sub "${Environment}-tasks"
 
 Outputs:
   HelloApiEndpoint:
