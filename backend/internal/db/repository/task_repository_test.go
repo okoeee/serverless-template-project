@@ -31,7 +31,7 @@ func TestTaskRepository_CreateTask(t *testing.T) {
 
 	user := models.NewUser("Test", "test@gmail.com")
 
-	newTask := models.NewTask(
+	newTask, _ := models.NewTask(
 		user.UserId,
 		"Clean the house",
 		"Clean the house before the party",
@@ -69,7 +69,7 @@ func TestTaskRepository_DeleteTask(t *testing.T) {
 
 	user := models.NewUser("Test", "test@gmail.com")
 
-	newTask := models.NewTask(
+	newTask, _ := models.NewTask(
 		user.UserId,
 		"Clean the house",
 		"Clean the house before the party",
@@ -95,7 +95,7 @@ func TestTaskRepository_UpdateTask(t *testing.T) {
 
 	user := models.NewUser("Test", "test@gmail.com")
 
-	newTask := models.NewTask(
+	newTask, _ := models.NewTask(
 		user.UserId,
 		"Clean the house",
 		"Clean the house before the party",

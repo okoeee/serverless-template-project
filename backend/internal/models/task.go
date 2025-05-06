@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -41,7 +42,16 @@ type Task struct {
 	DueDate     *time.Time
 }
 
-func NewTask(userId UserId, title, description string, dueDate *time.Time) *Task {
+func NewTask(userId UserId, title, description string, dueDate *time.Time) (*Task, error) {
+
+	if title == "" {
+		return nil, errors.New("title is required")
+	}
+
+	if len(title) > 100 {
+		return nil, errors.New("title must be less than 100 characters")
+	}
+
 	task := Task{
 		TaskId:      newTaskId(),
 		UserId:      userId,
@@ -50,5 +60,5 @@ func NewTask(userId UserId, title, description string, dueDate *time.Time) *Task
 		Status:      TaskStatusTodo,
 		DueDate:     dueDate,
 	}
-	return &task
+	return &task, nil
 }
