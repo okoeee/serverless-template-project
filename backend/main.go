@@ -27,6 +27,8 @@ func init() {
 
 	listTaskHandler := task.ListTaskHandler{TaskRepository: taskRepository}
 	createTaskHandler := task.NewCreateTaskHandler(taskService)
+	updateTaskHandler := task.NewUpdateTaskHandler(taskService)
+	deleteTaskHandler := task.NewDeleteTaskHandler(taskService)
 
 	r := gin.Default()
 
@@ -42,6 +44,8 @@ func init() {
 		{
 			taskGroup.GET("", listTaskHandler.Handle)
 			taskGroup.POST("", createTaskHandler.Handle)
+			taskGroup.PUT("/:taskId", updateTaskHandler.Handle)
+			taskGroup.DELETE("/:taskId", deleteTaskHandler.Handle)
 		}
 	}
 
