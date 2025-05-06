@@ -33,6 +33,19 @@ const (
 	TaskStatusDone       TaskStatus = "DONE"
 )
 
+func ParseTaskStatus(status string) (TaskStatus, error) {
+	switch status {
+	case string(TaskStatusTodo):
+		return TaskStatusTodo, nil
+	case string(TaskStatusInProgress):
+		return TaskStatusInProgress, nil
+	case string(TaskStatusDone):
+		return TaskStatusDone, nil
+	default:
+		return "", errors.New("invalid task status")
+	}
+}
+
 type Task struct {
 	TaskId      TaskId
 	UserId      UserId
