@@ -45,7 +45,7 @@ func TestTaskRepository_CreateTask(t *testing.T) {
 		t.Fatal("Error creating task:", err)
 	}
 
-	tasks, err := sut.filterTaskByUserId(ctx, user.UserId)
+	tasks, err := sut.FilterTaskByUserId(ctx, user.UserId)
 	if err != nil {
 		t.Fatal("Error filtering tasks:", err)
 	}
@@ -115,7 +115,7 @@ func TestTaskRepository_UpdateTask(t *testing.T) {
 		t.Fatal("Error updating task:", err)
 	}
 
-	tasks, err := sut.filterTaskByUserId(ctx, user.UserId)
+	tasks, err := sut.FilterTaskByUserId(ctx, user.UserId)
 	if err != nil {
 		t.Fatal("Error filtering tasks:", err)
 	}

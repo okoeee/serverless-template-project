@@ -57,7 +57,7 @@ func (r *TaskRepository) CreateTask(ctx context.Context, task *models.Task) erro
 
 }
 
-func (r *TaskRepository) filterTaskByUserId(ctx context.Context, userId models.UserId) ([]*models.Task, error) {
+func (r *TaskRepository) FilterTaskByUserId(ctx context.Context, userId models.UserId) ([]*models.Task, error) {
 
 	result, err := r.Client.Query(ctx, &dynamodb.QueryInput{
 		TableName:              &r.TableName,
