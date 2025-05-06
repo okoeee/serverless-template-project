@@ -20,7 +20,7 @@ Parameters:
       - prod
 
 Conditions:
-  IsDev: !Equals [!Reff Environment, dev]
+  IsDev: !Equals [!Ref Environment, dev]
 
 Resources:
   UsersTable:
@@ -77,14 +77,13 @@ Resources:
           APP_ENV: !Ref Environment
           USERS_TABLE_NAME: !Sub "${Environment}-users"
           TASKS_TABLE_NAME: !Sub "${Environment}-tasks"
-          ENDPOINT_URL_DYNAMODB: !If
-            - IsDev
+          ENDPOINT_URL_DYNAMODB: !If [IsDev, "", ""]
       Events:
-        HelloApiEvent:
+        Api:
           Type: HttpApi
           Properties:
-            Path: /hello
-            Method: post
+            Path: /{proxy+}
+            Method: ANY
       Policies:
         - DynamoDBCrudPolicy:
             TableName: !Sub "${Environment}-users"
