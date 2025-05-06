@@ -1,6 +1,7 @@
 package models
 
 import (
+	"errors"
 	"time"
 
 	"github.com/google/uuid"
@@ -32,6 +33,19 @@ const (
 	TaskStatusDone       TaskStatus = "DONE"
 )
 
+func ParseTaskStatus(status string) (TaskStatus, error) {
+	switch status {
+	case string(TaskStatusTodo):
+		return TaskStatusTodo, nil
+	case string(TaskStatusInProgress):
+		return TaskStatusInProgress, nil
+	case string(TaskStatusDone):
+		return TaskStatusDone, nil
+	default:
+		return "", errors.New("invalid task status")
+	}
+}
+
 type Task struct {
 	TaskId      TaskId
 	UserId      UserId
@@ -41,7 +55,12 @@ type Task struct {
 	DueDate     *time.Time
 }
 
-func NewTask(userId UserId, title, description string, dueDate *time.Time) *Task {
+func NewTask(userId UserId, title, description string, dueDate *time.Time) (*Task, error) {
+
+	if err := validateTitle(title); err != nil {
+		return nil, err
+	}
+
 	task := Task{
 		TaskId:      newTaskId(),
 		UserId:      userId,
@@ -50,5 +69,31 @@ func NewTask(userId UserId, title, description string, dueDate *time.Time) *Task
 		Status:      TaskStatusTodo,
 		DueDate:     dueDate,
 	}
-	return &task
+	return &task, nil
+
+}
+
+func (t *Task) Update(title, description string, status TaskStatus, dueDate *time.Time) error {
+
+	if err := validateTitle(title); err != nil {
+		return err
+	}
+
+	t.Title = title
+	t.Description = description
+	t.Status = status
+	t.DueDate = dueDate
+
+	return nil
+
+}
+
+func validateTitle(title string) error {
+	if title == "" {
+		return errors.New("title is required")
+	}
+	if len(title) > 100 {
+		return errors.New("title must be less than 100 characters")
+	}
+	return nil
 }

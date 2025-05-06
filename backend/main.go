@@ -4,6 +4,7 @@ import (
 	"backend/internal/db"
 	"backend/internal/db/repository"
 	"backend/internal/handlers/task"
+	serviceTask "backend/internal/service/task"
 	"context"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -20,7 +21,14 @@ func init() {
 		panic("Failed to create DynamoDB client: " + err.Error())
 	}
 
-	listTaskHandler := task.ListTaskHandler{TaskRepository: repository.NewTaskRepository(dynamoDBClient)}
+	taskRepository := repository.NewTaskRepository(dynamoDBClient)
+
+	taskService := serviceTask.NewTaskService(taskRepository)
+
+	listTaskHandler := task.ListTaskHandler{TaskRepository: taskRepository}
+	createTaskHandler := task.NewCreateTaskHandler(taskService)
+	updateTaskHandler := task.NewUpdateTaskHandler(taskService)
+	deleteTaskHandler := task.NewDeleteTaskHandler(taskService)
 
 	r := gin.Default()
 
@@ -35,6 +43,9 @@ func init() {
 		taskGroup := v1.Group("/task")
 		{
 			taskGroup.GET("", listTaskHandler.Handle)
+			taskGroup.POST("", createTaskHandler.Handle)
+			taskGroup.PUT("/:taskId", updateTaskHandler.Handle)
+			taskGroup.DELETE("/:taskId", deleteTaskHandler.Handle)
 		}
 	}
 
