@@ -8,6 +8,7 @@ import (
 
 type Repository interface {
 	CreateTask(ctx context.Context, task *models.Task) error
+	UpdateTask(ctx context.Context, task *models.Task) error
 }
 
 type TaskService struct {
@@ -46,4 +47,31 @@ func (s *TaskService) CreateTask(ctx context.Context, param CreateTaskParam) err
 
 	return nil
 
+}
+
+type UpdateTaskParam struct {
+	TaskId      models.TaskId
+	UserId      models.UserId
+	Title       string
+	Description string
+	DueDate     *time.Time
+	Status      models.TaskStatus
+}
+
+func (s *TaskService) UpdateTask(ctx context.Context, param UpdateTaskParam) error {
+	task := &models.Task{
+		TaskId:      param.TaskId,
+		UserId:      param.UserId,
+		Title:       param.Title,
+		Description: param.Description,
+		DueDate:     param.DueDate,
+		Status:      param.Status,
+	}
+
+	err := s.repository.UpdateTask(ctx, task)
+	if err != nil {
+		return err
+	}
+
+	return nil
 }
