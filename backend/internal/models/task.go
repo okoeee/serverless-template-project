@@ -44,12 +44,8 @@ type Task struct {
 
 func NewTask(userId UserId, title, description string, dueDate *time.Time) (*Task, error) {
 
-	if title == "" {
-		return nil, errors.New("title is required")
-	}
-
-	if len(title) > 100 {
-		return nil, errors.New("title must be less than 100 characters")
+	if err := validateTitle(title); err != nil {
+		return nil, err
 	}
 
 	task := Task{
@@ -61,4 +57,30 @@ func NewTask(userId UserId, title, description string, dueDate *time.Time) (*Tas
 		DueDate:     dueDate,
 	}
 	return &task, nil
+
+}
+
+func (t *Task) Update(title, description string, status TaskStatus, dueDate *time.Time) error {
+
+	if err := validateTitle(title); err != nil {
+		return err
+	}
+
+	t.Title = title
+	t.Description = description
+	t.Status = status
+	t.DueDate = dueDate
+
+	return nil
+
+}
+
+func validateTitle(title string) error {
+	if title == "" {
+		return errors.New("title is required")
+	}
+	if len(title) > 100 {
+		return errors.New("title must be less than 100 characters")
+	}
+	return nil
 }
