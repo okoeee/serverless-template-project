@@ -19,6 +19,11 @@ func (m *mockTaskRepo) UpdateTask(ctx context.Context, task *models.Task) error 
 	return args.Error(0)
 }
 
+func (m *mockTaskRepo) DeleteTask(ctx context.Context, taskId models.TaskId) error {
+	args := m.Called(ctx, taskId)
+	return args.Error(0)
+}
+
 func TestTaskService_CreateTask(t *testing.T) {
 
 	fixedUserId, _ := models.ParseUserId("123e4567-e89b-12d3-a456-426614174000")

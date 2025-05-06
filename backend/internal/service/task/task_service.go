@@ -9,6 +9,7 @@ import (
 type Repository interface {
 	CreateTask(ctx context.Context, task *models.Task) error
 	UpdateTask(ctx context.Context, task *models.Task) error
+	DeleteTask(ctx context.Context, taskId models.TaskId) error
 }
 
 type TaskService struct {
@@ -69,6 +70,15 @@ func (s *TaskService) UpdateTask(ctx context.Context, param UpdateTaskParam) err
 	}
 
 	err := s.repository.UpdateTask(ctx, task)
+	if err != nil {
+		return err
+	}
+
+	return nil
+}
+
+func (s *TaskService) DeleteTask(ctx context.Context, taskId models.TaskId) error {
+	err := s.repository.DeleteTask(ctx, taskId)
 	if err != nil {
 		return err
 	}
