@@ -1,6 +1,9 @@
 package main
 
 import (
+	"backend/internal/db"
+	"backend/internal/db/repository"
+	"backend/internal/handlers/task"
 	"context"
 	"github.com/aws/aws-lambda-go/events"
 	"github.com/aws/aws-lambda-go/lambda"
@@ -11,6 +14,14 @@ import (
 var ginLambda *ginadapter.GinLambdaV2
 
 func init() {
+
+	dynamoDBClient, err := db.GetDynamoDBClient(context.Background())
+	if err != nil {
+		panic("Failed to create DynamoDB client: " + err.Error())
+	}
+
+	listTaskHandler := task.ListTaskHandler{TaskRepository: repository.NewTaskRepository(dynamoDBClient)}
+
 	r := gin.Default()
 
 	r.GET("/ping", func(c *gin.Context) {
@@ -18,6 +29,14 @@ func init() {
 			"message": "pong",
 		})
 	})
+
+	v1 := r.Group("/api/v1")
+	{
+		taskGroup := v1.Group("/task")
+		{
+			taskGroup.GET("", listTaskHandler.Handle)
+		}
+	}
 
 	ginLambda = ginadapter.NewV2(r)
 }
