@@ -141,3 +141,18 @@ curl -X POST localhost:3000/hello \
      -H "Content-Type: application/json" \
      -d '{"name": "test","message": "hello"}'
 ```
+
+```sh
+curl http://127.0.0.1:3000/api/v1/task \
+     -H "Content-Type: application/json"
+```
+
+```sh
+curl -X POST \
+  http://localhost:3000/api/v1/task \
+  -H 'Content-Type: application/json' \
+  -d '{
+    "title": "Complete project documentation",
+    "description": "Write comprehensive documentation for the API endpoints"
+  }'
+```
